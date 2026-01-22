@@ -1,4 +1,4 @@
-//! Claude Terminal - A fast, responsive terminal interface for Claude Code
+//! Claude Terminal - A fast, responsive terminal interface for Claude Code.
 
 mod app;
 mod bash;
@@ -13,7 +13,7 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 #[derive(Parser, Debug)]
 #[command(name = "claude-terminal")]
-#[command(about = "A fast, responsive terminal interface for Claude Code")]
+#[command(about = "A fast, responsive terminal interface for Claude Code.")]
 #[command(version)]
 struct Args {
     /// Model to use (e.g., sonnet, opus, haiku)
