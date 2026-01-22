@@ -37,7 +37,7 @@ pub fn draw_conversation(frame: &mut Frame, area: Rect, state: &RenderState) {
             ConversationContent::Text(text) => {
                 // Add role header
                 lines.push(Line::from(vec![
-                    Span::styled(format!("{}: ", prefix), style),
+                    Span::styled(format!("{}", prefix), style),
                 ]));
                 // Add content with word wrapping handled by Paragraph
                 for line in text.lines() {
@@ -127,7 +127,7 @@ pub fn draw_conversation(frame: &mut Frame, area: Rect, state: &RenderState) {
     // Add streaming buffer if present
     if !state.streaming_buffer.is_empty() {
         lines.push(Line::from(vec![
-            Span::styled("Claude: ", styles::assistant_style()),
+            Span::styled("Claude", styles::assistant_style()),
         ]));
         for line in state.streaming_buffer.lines() {
             lines.push(Line::from(Span::styled(line.to_string(), Style::default().fg(styles::TEXT))));

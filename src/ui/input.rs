@@ -21,22 +21,21 @@ pub fn draw_input(frame: &mut Frame, area: Rect, state: &RenderState) {
         .border_style(border_style)
         .title(title);
 
-    // Build input line with cursor
+    // Build input line with vertical bar cursor
     let input = state.input;
     let cursor_pos = state.cursor_position;
 
-    let (before_cursor, cursor_char, after_cursor) = if cursor_pos < input.len() {
-        let (before, rest) = input.split_at(cursor_pos);
-        let mut chars = rest.chars();
-        let cursor = chars.next().unwrap_or(' ');
-        (before.to_string(), cursor, chars.collect::<String>())
+    let (before_cursor, after_cursor) = if cursor_pos <= input.len() {
+        let (before, after) = input.split_at(cursor_pos);
+        (before.to_string(), after.to_string())
     } else {
-        (input.to_string(), ' ', String::new())
+        (input.to_string(), String::new())
     };
 
     let line = Line::from(vec![
+        Span::styled("  ", styles::input_style()), // Left padding
         Span::styled(before_cursor, styles::input_style()),
-        Span::styled(cursor_char.to_string(), styles::cursor_style()),
+        Span::styled("│", styles::cursor_style()),
         Span::styled(after_cursor, styles::input_style()),
     ]);
 
@@ -44,8 +43,8 @@ pub fn draw_input(frame: &mut Frame, area: Rect, state: &RenderState) {
 
     frame.render_widget(paragraph, area);
 
-    // Set cursor position
-    let x = area.x + 1 + cursor_pos as u16;
+    // Set cursor position (accounting for border + padding)
+    let x = area.x + 1 + 2 + cursor_pos as u16; // +1 border, +2 padding
     let y = area.y + 1;
     if x < area.x + area.width - 1 {
         frame.set_cursor_position((x, y));

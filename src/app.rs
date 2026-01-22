@@ -258,6 +258,35 @@ impl App {
                     self.cursor_position = 0;
                 }
             }
+            // Delete word backward (Ctrl+W)
+            (KeyModifiers::CONTROL, KeyCode::Char('w')) => {
+                self.delete_word_backward();
+            }
+            // Delete to beginning of line (Ctrl+U)
+            (KeyModifiers::CONTROL, KeyCode::Char('u')) => {
+                self.input.drain(..self.cursor_position);
+                self.cursor_position = 0;
+            }
+            // Delete to end of line (Ctrl+K)
+            (KeyModifiers::CONTROL, KeyCode::Char('k')) => {
+                self.input.truncate(self.cursor_position);
+            }
+            // Move word backward (Alt+B / Ctrl+Left)
+            (KeyModifiers::ALT, KeyCode::Char('b')) => {
+                self.cursor_position = self.find_word_boundary_backward();
+            }
+            // Move word forward (Alt+F / Ctrl+Right)
+            (KeyModifiers::ALT, KeyCode::Char('f')) => {
+                self.cursor_position = self.find_word_boundary_forward();
+            }
+            // Move to beginning of line (Ctrl+A)
+            (KeyModifiers::CONTROL, KeyCode::Char('a')) => {
+                self.cursor_position = 0;
+            }
+            // Move to end of line (Ctrl+E)
+            (KeyModifiers::CONTROL, KeyCode::Char('e')) => {
+                self.cursor_position = self.input.len();
+            }
             // Submit input
             (_, KeyCode::Enter) => {
                 if !self.input.is_empty() {
@@ -584,6 +613,50 @@ impl App {
             None => String::new(),
         };
         self.cursor_position = self.input.len();
+    }
+
+    /// Find the position of the previous word boundary
+    fn find_word_boundary_backward(&self) -> usize {
+        if self.cursor_position == 0 {
+            return 0;
+        }
+        let bytes = self.input.as_bytes();
+        let mut pos = self.cursor_position - 1;
+        // Skip trailing whitespace
+        while pos > 0 && bytes[pos].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        // Find start of word
+        while pos > 0 && !bytes[pos - 1].is_ascii_whitespace() {
+            pos -= 1;
+        }
+        pos
+    }
+
+    /// Find the position of the next word boundary
+    fn find_word_boundary_forward(&self) -> usize {
+        let len = self.input.len();
+        if self.cursor_position >= len {
+            return len;
+        }
+        let bytes = self.input.as_bytes();
+        let mut pos = self.cursor_position;
+        // Skip current word
+        while pos < len && !bytes[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        // Skip whitespace
+        while pos < len && bytes[pos].is_ascii_whitespace() {
+            pos += 1;
+        }
+        pos
+    }
+
+    /// Delete the word before the cursor
+    fn delete_word_backward(&mut self) {
+        let new_pos = self.find_word_boundary_backward();
+        self.input.drain(new_pos..self.cursor_position);
+        self.cursor_position = new_pos;
     }
 
     async fn handle_app_message(&mut self, msg: AppMessage) -> Result<()> {

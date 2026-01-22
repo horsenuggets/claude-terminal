@@ -80,7 +80,7 @@ pub fn input_style() -> Style {
 }
 
 pub fn cursor_style() -> Style {
-    Style::default().fg(BASE).bg(TEXT)
+    Style::default().fg(MAUVE).add_modifier(Modifier::BOLD)
 }
 
 pub fn status_style() -> Style {
