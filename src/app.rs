@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use crossterm::{
+    cursor::SetCursorStyle,
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
@@ -131,7 +132,7 @@ impl App {
         // Set up terminal
         enable_raw_mode()?;
         let mut stdout = io::stdout();
-        execute!(stdout, EnterAlternateScreen)?;
+        execute!(stdout, EnterAlternateScreen, SetCursorStyle::SteadyBar)?;
         let backend = CrosstermBackend::new(stdout);
         let terminal = Terminal::new(backend)?;
 
@@ -728,7 +729,11 @@ impl App {
 
         // Restore terminal
         disable_raw_mode()?;
-        execute!(self.terminal.backend_mut(), LeaveAlternateScreen)?;
+        execute!(
+            self.terminal.backend_mut(),
+            LeaveAlternateScreen,
+            SetCursorStyle::DefaultUserShape
+        )?;
         self.terminal.show_cursor()?;
         Ok(())
     }

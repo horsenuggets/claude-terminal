@@ -16,8 +16,8 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 #[command(about = "A fast, responsive terminal interface for Claude Code.")]
 #[command(version)]
 struct Args {
-    /// Model to use (e.g., sonnet, opus, haiku)
-    #[arg(short, long, default_value = "sonnet")]
+    /// Model to use (e.g., opus, sonnet, haiku)
+    #[arg(short, long, default_value = "opus")]
     model: String,
 
     /// Working directory

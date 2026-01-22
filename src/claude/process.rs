@@ -33,6 +33,7 @@ impl ClaudeProcess {
         cmd.arg("--print");
         cmd.arg("--output-format");
         cmd.arg("stream-json");
+        cmd.arg("--verbose");
         cmd.arg("--dangerously-skip-permissions");
         cmd.arg("--model");
         cmd.arg(model);
