@@ -3,6 +3,7 @@
 mod app;
 mod bash;
 mod claude;
+mod input_utils;
 mod sessions;
 mod ui;
 mod voice;

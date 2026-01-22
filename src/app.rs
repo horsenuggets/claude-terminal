@@ -617,45 +617,18 @@ impl App {
 
     /// Find the position of the previous word boundary
     fn find_word_boundary_backward(&self) -> usize {
-        if self.cursor_position == 0 {
-            return 0;
-        }
-        let bytes = self.input.as_bytes();
-        let mut pos = self.cursor_position - 1;
-        // Skip trailing whitespace
-        while pos > 0 && bytes[pos].is_ascii_whitespace() {
-            pos -= 1;
-        }
-        // Find start of word
-        while pos > 0 && !bytes[pos - 1].is_ascii_whitespace() {
-            pos -= 1;
-        }
-        pos
+        crate::input_utils::find_word_boundary_backward(&self.input, self.cursor_position)
     }
 
     /// Find the position of the next word boundary
     fn find_word_boundary_forward(&self) -> usize {
-        let len = self.input.len();
-        if self.cursor_position >= len {
-            return len;
-        }
-        let bytes = self.input.as_bytes();
-        let mut pos = self.cursor_position;
-        // Skip current word
-        while pos < len && !bytes[pos].is_ascii_whitespace() {
-            pos += 1;
-        }
-        // Skip whitespace
-        while pos < len && bytes[pos].is_ascii_whitespace() {
-            pos += 1;
-        }
-        pos
+        crate::input_utils::find_word_boundary_forward(&self.input, self.cursor_position)
     }
 
     /// Delete the word before the cursor
     fn delete_word_backward(&mut self) {
-        let new_pos = self.find_word_boundary_backward();
-        self.input.drain(new_pos..self.cursor_position);
+        let (new_input, new_pos) = crate::input_utils::delete_word_backward(&self.input, self.cursor_position);
+        self.input = new_input;
         self.cursor_position = new_pos;
     }
 
