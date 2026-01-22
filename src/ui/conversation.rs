@@ -26,11 +26,11 @@ pub fn draw_conversation(frame: &mut Frame, area: Rect, state: &RenderState) {
 
     for entry in state.messages {
         let (prefix, style) = match entry.role {
-            Role::User => ("You", styles::user_style()),
-            Role::Assistant => ("Claude", styles::assistant_style()),
-            Role::System => ("System", styles::system_style()),
-            Role::Tool => ("Tool", styles::tool_style()),
-            Role::Bash => ("Bash", styles::bash_style()),
+            Role::User => ("[You]", styles::user_style()),
+            Role::Assistant => ("[Claude]", styles::assistant_style()),
+            Role::System => ("[System]", styles::system_style()),
+            Role::Tool => ("[Tool]", styles::tool_style()),
+            Role::Bash => ("[Bash]", styles::bash_style()),
         };
 
         match &entry.content {
@@ -127,7 +127,7 @@ pub fn draw_conversation(frame: &mut Frame, area: Rect, state: &RenderState) {
     // Add streaming buffer if present
     if !state.streaming_buffer.is_empty() {
         lines.push(Line::from(vec![
-            Span::styled("Claude", styles::assistant_style()),
+            Span::styled("[Claude]", styles::assistant_style()),
         ]));
         for line in state.streaming_buffer.lines() {
             lines.push(Line::from(Span::styled(line.to_string(), Style::default().fg(styles::TEXT))));
