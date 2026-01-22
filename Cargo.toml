@@ -1,0 +1,47 @@
+[package]
+name = "claude-terminal"
+version = "0.1.0"
+edition = "2021"
+description = "A fast, responsive terminal interface for Claude Code"
+license = "MIT"
+authors = ["Chris"]
+
+[dependencies]
+# TUI
+ratatui = "0.29"
+crossterm = "0.28"
+
+# Async
+tokio = { version = "1", features = ["full", "process", "sync"] }
+tokio-stream = "0.1"
+futures = "0.3"
+
+# JSON parsing
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# HTTP client (for Whisper API)
+reqwest = { version = "0.12", features = ["json", "multipart", "stream"] }
+
+# Audio recording
+cpal = "0.15"
+hound = "3.5"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Misc
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "5"
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[profile.release]
+lto = true
+codegen-units = 1
