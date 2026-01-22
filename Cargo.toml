@@ -2,7 +2,7 @@
 name = "claude-terminal"
 version = "0.1.0"
 edition = "2021"
-description = "A fast, responsive terminal interface for Claude Code"
+description = "A fast, responsive terminal interface for Claude Code."
 license = "MIT"
 authors = ["Chris"]
 
