@@ -47,11 +47,13 @@ pub fn delete_word_backward(input: &str, cursor_position: usize) -> (String, usi
 }
 
 /// Delete from cursor to end of line
+#[allow(dead_code)]
 pub fn delete_to_end(input: &str, cursor_position: usize) -> String {
     input[..cursor_position].to_string()
 }
 
 /// Delete from beginning to cursor
+#[allow(dead_code)]
 pub fn delete_to_start(input: &str, cursor_position: usize) -> String {
     input[cursor_position..].to_string()
 }

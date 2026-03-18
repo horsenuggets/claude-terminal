@@ -56,7 +56,8 @@ impl VoiceRecorder {
     }
 
     /// Stop recording and transcribe
-    pub async fn stop(&self) -> Result<()> {
+    /// `dynamic_context` - Session-specific terms to improve transcription accuracy
+    pub async fn stop(&self, dynamic_context: Option<String>) -> Result<()> {
         self.recording.store(false, Ordering::SeqCst);
 
         // Give time for the stream to finish
@@ -81,9 +82,9 @@ impl VoiceRecorder {
 
         let tx = self.message_tx.clone();
 
-        // Transcribe in background
+        // Transcribe in background with dynamic context
         tokio::spawn(async move {
-            match transcribe(&samples, sample_rate).await {
+            match transcribe(&samples, sample_rate, dynamic_context.as_deref()).await {
                 Ok(text) => {
                     let _ = tx.send(AppMessage::VoiceTranscription(text)).await;
                 }

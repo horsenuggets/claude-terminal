@@ -85,6 +85,7 @@ impl SessionManager {
     }
 
     /// Deregister this session
+    #[allow(dead_code)]
     pub async fn deregister(&self) -> Result<()> {
         if let Some(ref session_id) = self.session_id {
             let path = self.sessions_dir.join(format!("{}.json", session_id));
@@ -218,6 +219,7 @@ impl SessionManager {
                             // Clear after reading
                             let _ = tokio::fs::remove_file(&path).await;
                             last_size = 0;
+                            continue;
                         }
                     }
                     last_size = size;
@@ -231,10 +233,8 @@ impl SessionManager {
 fn is_process_alive(pid: u32) -> bool {
     #[cfg(unix)]
     {
-        use std::os::unix::process::CommandExt;
-        unsafe {
-            libc::kill(pid as i32, 0) == 0
-        }
+        // SAFETY: kill with signal 0 just checks if process exists
+        unsafe { libc::kill(pid as i32, 0) == 0 }
     }
     #[cfg(windows)]
     {

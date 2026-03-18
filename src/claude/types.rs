@@ -1,6 +1,11 @@
 //! Types for Claude CLI streaming JSON output
+//!
+//! These types represent the JSON streaming output from Claude CLI.
+//! Many fields are parsed but not directly used - they're part of the API contract.
 
-use serde::{Deserialize, Serialize};
+#![allow(dead_code)]
+
+use serde::Deserialize;
 
 /// Events emitted from parsing Claude CLI stream-json output
 #[derive(Debug, Clone)]
@@ -20,6 +25,8 @@ pub enum StreamEvent {
         cache_read_tokens: u64,
         cache_write_tokens: u64,
     },
+    /// Actual model being used (full name like "claude-opus-4-5-20251101")
+    Model(String),
 }
 
 /// Message role in conversation

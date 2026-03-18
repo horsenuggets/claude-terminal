@@ -40,6 +40,10 @@ impl StreamParser {
 
         match event {
             RawStreamEvent::Assistant { message } | RawStreamEvent::MessageStart { message } => {
+                // Emit model name if present
+                if let Some(model) = message.model {
+                    events.push(StreamEvent::Model(model));
+                }
                 // Process any content blocks in the message
                 if let Some(content) = message.content {
                     for block in content {

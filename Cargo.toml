@@ -30,6 +30,12 @@ hound = "3.5"
 # CLI
 clap = { version = "4", features = ["derive"] }
 
+# Git
+git2 = "0.19"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
 # Misc
 uuid = { version = "1", features = ["v4"] }
 chrono = { version = "0.4", features = ["serde"] }
@@ -42,6 +48,9 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
 
+[dev-dependencies]
+tempfile = "3"
+
 [profile.release]
-lto = true
-codegen-units = 1
+lto = false
+codegen-units = 16

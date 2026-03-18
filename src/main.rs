@@ -3,10 +3,12 @@
 mod app;
 mod bash;
 mod claude;
+mod commands;
 mod input_utils;
 mod sessions;
 mod ui;
 mod voice;
+mod worktree;
 
 use anyhow::Result;
 use clap::Parser;

@@ -1,5 +1,7 @@
 //! UI styles and colors (Catppuccin theme)
 
+#![allow(dead_code)]
+
 use ratatui::style::{Color, Modifier, Style};
 
 // Catppuccin Mocha palette
@@ -17,7 +19,8 @@ pub const SKY: Color = Color::Rgb(137, 220, 235);
 pub const SAPPHIRE: Color = Color::Rgb(116, 199, 236);
 pub const BLUE: Color = Color::Rgb(137, 180, 250);
 pub const LAVENDER: Color = Color::Rgb(180, 190, 254);
-pub const TEXT: Color = Color::Rgb(205, 214, 244);
+// Brighter white for main text
+pub const TEXT: Color = Color::Rgb(240, 240, 250);
 pub const SUBTEXT1: Color = Color::Rgb(186, 194, 222);
 pub const SUBTEXT0: Color = Color::Rgb(166, 173, 200);
 pub const OVERLAY2: Color = Color::Rgb(147, 153, 178);
@@ -30,13 +33,17 @@ pub const BASE: Color = Color::Rgb(30, 30, 46);
 pub const MANTLE: Color = Color::Rgb(24, 24, 37);
 pub const CRUST: Color = Color::Rgb(17, 17, 27);
 
+// Dot indicators (like Claude Code)
+pub const DOT: &str = "● ";
+pub const ARROW: &str = "❯ ";
+
 // Role-specific styles
 pub fn user_style() -> Style {
     Style::default().fg(SAPPHIRE).add_modifier(Modifier::BOLD)
 }
 
 pub fn assistant_style() -> Style {
-    Style::default().fg(MAUVE)
+    Style::default().fg(PEACH)
 }
 
 pub fn system_style() -> Style {
@@ -93,4 +100,65 @@ pub fn model_style() -> Style {
 
 pub fn token_style() -> Style {
     Style::default().fg(GREEN)
+}
+
+// User message with gray background (like Claude Code)
+pub fn user_message_style() -> Style {
+    Style::default().fg(TEXT).bg(SURFACE0)
+}
+
+// White dot for normal Claude output
+pub fn dot_normal() -> Style {
+    Style::default().fg(TEXT)
+}
+
+// Green dot for successful bash
+pub fn dot_success() -> Style {
+    Style::default().fg(GREEN)
+}
+
+// Red dot for failed bash
+pub fn dot_error() -> Style {
+    Style::default().fg(RED)
+}
+
+// Orange/peach for tool operations
+pub fn dot_tool() -> Style {
+    Style::default().fg(PEACH)
+}
+
+// Dim style for secondary info
+pub fn dim_style() -> Style {
+    Style::default().fg(OVERLAY0)
+}
+
+// Inline code style (backticks `code`)
+pub fn inline_code_style() -> Style {
+    Style::default().fg(LAVENDER)
+}
+
+// Diff styles for Edit tool
+pub fn diff_removed_style() -> Style {
+    Style::default().fg(RED)
+}
+
+pub fn diff_added_style() -> Style {
+    Style::default().fg(GREEN)
+}
+
+// Markdown styles
+pub fn header_style() -> Style {
+    Style::default().fg(TEXT).add_modifier(Modifier::BOLD)
+}
+
+pub fn bold_style() -> Style {
+    Style::default().fg(TEXT).add_modifier(Modifier::BOLD)
+}
+
+pub fn italic_style() -> Style {
+    Style::default().fg(TEXT).add_modifier(Modifier::ITALIC)
+}
+
+pub fn code_block_style() -> Style {
+    Style::default().fg(LAVENDER).bg(SURFACE0)
 }

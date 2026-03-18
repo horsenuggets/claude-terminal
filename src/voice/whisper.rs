@@ -11,8 +11,24 @@ struct TranscriptionResponse {
     text: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct ApiError {
+    error: ApiErrorDetail,
+}
+
+#[derive(Debug, Deserialize)]
+struct ApiErrorDetail {
+    message: String,
+}
+
+/// Base prompt with common technical vocabulary
+const BASE_PROMPT: &str = "Claude, Claude Code, Anthropic, Luau, Roblox, Lune, Wally, Rokit, \
+    GitHub, git, commit, push, pull request, PR, repository, codebase, \
+    TypeScript, JavaScript, Rust, Python, API, CLI, terminal, worktree";
+
 /// Transcribe audio samples using OpenAI Whisper API
-pub async fn transcribe(samples: &[f32], sample_rate: u32) -> Result<String> {
+/// `dynamic_context` - Optional session-specific terms to improve transcription accuracy
+pub async fn transcribe(samples: &[f32], sample_rate: u32, dynamic_context: Option<&str>) -> Result<String> {
     let api_key = std::env::var("OPENAI_API_KEY")
         .map_err(|_| anyhow::anyhow!("OPENAI_API_KEY not set"))?;
 
@@ -31,23 +47,56 @@ pub async fn transcribe(samples: &[f32], sample_rate: u32) -> Result<String> {
         .file_name("audio.wav")
         .mime_str("audio/wav")?;
 
+    // Combine base prompt with dynamic context (limit total to ~200 chars for safety)
+    let prompt = match dynamic_context {
+        Some(ctx) if !ctx.is_empty() => {
+            let combined = format!("{}, {}", BASE_PROMPT, ctx);
+            // Truncate if too long (Whisper prompt limit is ~224 tokens)
+            if combined.len() > 400 {
+                combined[..400].to_string()
+            } else {
+                combined
+            }
+        }
+        _ => BASE_PROMPT.to_string(),
+    };
+
     let form = Form::new()
         .part("file", part)
         .text("model", "whisper-1")
-        .text("language", "en");
+        .text("language", "en")
+        .text("prompt", prompt);
 
-    // Send request
-    let client = reqwest::Client::new();
+    // Send request with timeout
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()?;
+
     let response = client
         .post(WHISPER_API_URL)
         .header("Authorization", format!("Bearer {}", api_key))
         .multipart(form)
         .send()
-        .await?;
+        .await
+        .map_err(|e| {
+            if e.is_timeout() {
+                anyhow::anyhow!("Request timed out - try a shorter recording")
+            } else if e.is_connect() {
+                anyhow::anyhow!("Connection failed - check your internet")
+            } else {
+                anyhow::anyhow!("Network error: {}", e)
+            }
+        })?;
 
     if !response.status().is_success() {
-        let error = response.text().await?;
-        return Err(anyhow::anyhow!("Whisper API error: {}", error));
+        let error_text = response.text().await?;
+        // Try to parse as JSON to get a cleaner error message
+        let message = if let Ok(api_error) = serde_json::from_str::<ApiError>(&error_text) {
+            api_error.error.message
+        } else {
+            error_text
+        };
+        return Err(anyhow::anyhow!("{}", message));
     }
 
     let result: TranscriptionResponse = response.json().await?;

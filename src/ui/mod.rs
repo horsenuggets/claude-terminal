@@ -5,12 +5,15 @@ mod input;
 mod layout;
 mod status;
 mod styles;
+mod wrap;
 
 pub use conversation::*;
 pub use input::*;
 pub use layout::*;
 pub use status::*;
+#[allow(unused_imports)]
 pub use styles::*;
+pub use wrap::*;
 
 use ratatui::Frame;
 
@@ -38,11 +41,28 @@ pub struct RenderState<'a> {
     pub status_message: Option<&'a str>,
     pub token_usage: &'a TokenUsage,
     pub message_queue_len: usize,
+    pub autocomplete_suggestion: Option<&'a str>,
+    pub animation_tick: u8,
+    pub total_messages: usize,
+    pub verbose_mode: bool,
+}
+
+/// Calculate visual lines needed for input (accounting for word wrapping)
+fn calculate_input_visual_lines(input: &str, width: u16) -> u16 {
+    // Available width for text (subtract 2 for "> " or "  " prefix)
+    let text_width = width.saturating_sub(2) as usize;
+    if text_width == 0 {
+        return 1;
+    }
+
+    calculate_wrapped_line_count(input, text_width) as u16
 }
 
 /// Main draw function
 pub fn draw(frame: &mut Frame, state: &RenderState) {
-    let chunks = create_layout(frame.area());
+    // Calculate visual lines needed (accounting for wrapping)
+    let input_lines = calculate_input_visual_lines(state.input, frame.area().width);
+    let chunks = create_layout(frame.area(), input_lines);
 
     // Draw conversation area
     draw_conversation(frame, chunks[0], state);

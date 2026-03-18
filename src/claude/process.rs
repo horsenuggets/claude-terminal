@@ -10,7 +10,7 @@ use tokio::{
 
 use crate::app::AppMessage;
 
-use super::{StreamEvent, StreamParser};
+use super::StreamParser;
 
 /// Manages a Claude CLI process
 pub struct ClaudeProcess {
@@ -113,7 +113,7 @@ impl ClaudeProcess {
 
         // Spawn task to read stderr
         let stderr = self.child.stderr.take();
-        let tx_err = self.message_tx.clone();
+        let _tx_err = self.message_tx.clone();
 
         if let Some(stderr) = stderr {
             tokio::spawn(async move {
